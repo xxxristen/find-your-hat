@@ -1,0 +1,23 @@
+{
+  "name": "find-your-hat",
+  "version": "1.0.0",
+  "description": "This is my repository for the JavaScript assessment - Find your hat",
+  "main": "gameplay.js",
+  "scripts": {
+    "start": "node gameplay.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xxxristen/find-your-hat.git"
+  },
+  "author": "X",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/xxxristen/find-your-hat/issues"
+  },
+  "homepage": "https://github.com/xxxristen/find-your-hat#readme",
+  "dependencies": {
+    "prompt-sync": "^4.2.0"
+  }
+}
