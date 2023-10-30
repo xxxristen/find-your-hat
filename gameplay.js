@@ -3,6 +3,10 @@ const hat = "^";
 const hole = "O";
 const fieldCharacter = "░";
 const pathCharacter = "*";
+
+const GREENFLAG = 1;
+const REDFLAG = 0;
+
 // Reset text color
 const reset = "\x1b[0m";
 // Set message text colors
@@ -78,25 +82,34 @@ class Field {
                 break;
         }
     }
+    // Display status of game
+    displayStatus(msg, flag) {
+        switch (flag) {
+            case REDFLAG:
+                log.red(msg)
+                break;
+
+            default:
+                log.green(msg)
+                break;
+        }
+        this.gamePlay = false;
+        process.exit();
+    }
+
     // Catch if user has gone off-bound, fallen into the hole or found hat
     checkPosition() {
         if (this.locationY < 0 || this.locationX < 0 || this.locationY > this.field.length || this.locationX > this.field[0].length) {
-            log.red("You have gone off-bound. Terminating game.")
-            this.gamePlay = false;
-            process.exit();
+            this.displayStatus("You have gone off-bound. Terminating game.", REDFLAG)
         }
         else if (this.field[this.locationY][this.locationX] === hole) {
-            log.red("You have fallen into a hole. You lost.")
-            this.gamePlay = false;
-            process.exit();
+            this.displayStatus("You have fallen into a hole. You lost.", REDFLAG)
         }
         else if (this.field[this.locationY][this.locationX] === hat) {
-            log.green("You have found your hat! Congratulations!")
-            this.gamePlay = false;
-            process.exit();
+            this.displayStatus("You have found your hat! Congratulations!", GREENFLAG)
         }
     }
-    // Generate field base on height and width inputted by user. Percentage of holes to appear: 0.1 - 0.2 (randomised)
+    // Generate field base on height and width input by user. Percentage of holes to appear: 0.1 - 0.2 (randomised)
     static generateField(height, width, percentage) {
         percentage = 0.1 + Math.random() * 0.1;
         // Create new array of (height) and (width) - empty items.
@@ -123,22 +136,36 @@ class Field {
         return field;
     }
 }
+// Check if user input a valid height/width
+function checkInput(inputType, input) {
+    while (!/^([1-9][0-9]?$|^100)$/.test(input)) {
+        log.red("You did not enter a number or limit the number to 1 - 100.");
+        switch (inputType) {
+            case "height":
+                gameHeight = prompt("Input a number to set height of the maze: ");
+                input = gameHeight;
+                break;
+            case "width":
+                gameWidth = prompt("Input a number to set width of the maze: ");
+                input = gameWidth;
+                break;
+            default:
+                break;
+        }
+    }
+}
+
 console.clear();
 // Log welcome message and prompt user for inputs to set maze
 log.yellow("Welcome to Find Your Hat\n=========================\n")
 console.log("Customise the maze size to set the level of difficulty.\n")
-console.log("Limit your input to a number between 1-10\n")
+console.log("Limit your input to a number between 1-100\n")
 // Prompt user input
-let gameHeight = prompt("Input a number to set height of the maze: ")
-while (!/^([1-9]|10)$/.test(gameHeight)) {
-    log.red("You did not enter a number or limit the number to 1 - 10.");
-    gameHeight = prompt("Input a number to set height of the maze: ");
-}
-let gameWidth = prompt("Input a number to set width of the maze: ")
-while (!/^([1-9]|10)$/.test(gameWidth)) {
-    log.red("You did not enter a number or limit the number to 1 - 10.");
-    gameWidth = prompt("Input a number to set width of the maze: ");
-}
+gameHeight = prompt("Input a number to set height of the maze: ")
+checkInput("height", gameHeight);
+gameWidth = prompt("Input a number to set width of the maze: ")
+checkInput("width", gameWidth);
+
 // Instantiate class
 const myField = new Field(Field.generateField(Number(gameHeight), Number(gameWidth)))
 myField.startGame();
